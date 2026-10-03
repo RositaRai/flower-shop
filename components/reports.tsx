@@ -74,7 +74,7 @@ export function Reports() {
             reports.map((report) => (
               <div className="report-row" key={report.id}>
                 <strong>
-                  {new Date(`${report.report_date}T00:00:00`).toLocaleDateString("lt-LT")}
+                  {report.report_date}
                 </strong>
                 <span>{report.bouquets_sold} puokštės</span>
                 <strong>{Number(report.revenue).toFixed(2)} €</strong>
