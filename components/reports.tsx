@@ -74,7 +74,7 @@ export function Reports() {
             reports.map((report) => (
               <div className="report-row" key={report.id}>
                 <strong>
-                  {report.report_date}
+                  {report.report_date.split("T")[0]}
                 </strong>
                 <span>{report.bouquets_sold} puokštės</span>
                 <strong>{Number(report.revenue).toFixed(2)} €</strong>
