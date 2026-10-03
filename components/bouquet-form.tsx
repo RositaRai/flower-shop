@@ -69,7 +69,7 @@ export function BouquetForm() {
         <div className="form-card">
           <p className="eyebrow">KATALOGAS</p>
           <h1>Pridėti naują puokštę</h1>
-          <p className="muted">Įvesk puokštės informaciją ir pridėk jos nuotrauką.</p>
+          <p className="muted">Įveskite puokštės informaciją ir pridėkite jos nuotrauką.</p>
 
           <form onSubmit={submit} className="flower-form">
             <label>
@@ -106,7 +106,7 @@ export function BouquetForm() {
                 accept="image/*"
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               />
-              <small>Šiam demonstraciniam variantui nuotrauka turi būti iki 4 MB.</small>
+              <small>Nuotrauka turi būti iki 4 MB.</small>
             </label>
 
             {error && <div className="error">{error}</div>}
