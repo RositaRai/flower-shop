@@ -1,5 +1,9 @@
-import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
+import { extname } from "node:path";
+import { getBouquetImageStore } from "@/lib/blob";
+
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
@@ -27,16 +31,28 @@ export async function POST(request: Request) {
       );
     }
 
-    const blob = await put(`bouquets/${Date.now()}-${file.name}`, file, {
-      access: "public",
-      addRandomSuffix: true
+    const extension = extname(file.name)
+      .toLowerCase()
+      .replace(/[^.a-z0-9]/g, "");
+
+    const key = `${randomUUID()}${extension}`;
+
+    const store = getBouquetImageStore();
+
+    await store.set(key, file, {
+      metadata: {
+        contentType: file.type,
+        originalName: file.name
+      }
     });
 
     return NextResponse.json({
-      url: blob.url,
-      pathname: blob.pathname
+      url: `/api/images/${key}`,
+      pathname: key
     });
-  } catch {
+  } catch (error) {
+    console.error("Image upload failed:", error);
+
     return NextResponse.json(
       { error: "Nepavyko įkelti nuotraukos." },
       { status: 500 }
