@@ -6,7 +6,18 @@ Universitetinei užduočiai skirta web aplikacija.
 
 ### 1. PaaS
 
-Aplikacija deployinama į Vercel.
+Aplikacija deployinama į Netlify (Next.js adapteris parenkamas automatiškai).
+
+### Paleidimas ir Netlify konfigūracija
+
+- Naudokite Node.js 22.12 arba naujesnę versiją.
+- Priklausomybes įdiekite su `npm ci`, build patikrinkite su `npm run build`.
+- Netlify projekto aplinkos kintamuosiuose nustatykite `NETLIFY_DB_URL`
+  (Neon PostgreSQL jungties eilutę) ir `CRON_SECRET`; jie turi būti prieinami Functions.
+- `netlify.toml` nustato build komandą, `.next` publikavimo katalogą ir Node.js 22.
+- Netlify Blobs prisijungimo duomenis pateikia automatiškai. `BLOB_READ_WRITE_TOKEN`
+  yra Vercel kintamasis ir nebenaudojamas. Vietiniam darbui su nuotraukomis
+  naudokite Netlify Dev (`netlify dev`); paprastas `npm run dev` Blobs konteksto nesuteikia.
 
 ### 2. CRUD + list
 
@@ -72,13 +83,17 @@ Naudojamas Neon PostgreSQL.
 
 ### File storage
 
-Puokščių nuotraukos saugomos Vercel Blob.
+Naujos puokščių nuotraukos saugomos Netlify Blobs, `bouquet-images` saugykloje,
+`eu-central-1` regione.
 
-Duomenų bazėje išsaugomas tik Blob URL.
+Duomenų bazėje išsaugomas nuotraukos API URL (`/api/images/:key`).
+Anksčiau į Vercel Blob įkeltos nuotraukos automatiškai neperkeliamos.
 
 ## 6. Background task
 
-Vercel Cron kiekvieną dieną paleidžia:
+`vercel.json` aprašytas Vercel Cron į Netlify automatiškai neperkeliamas.
+Netlify aplinkoje reikia atskirai sukonfigūruoti kasdienį užduoties paleidimą,
+kuris su antrašte `Authorization: Bearer <CRON_SECRET>` iškviestų:
 
 ```text
 GET /api/cron/daily-report
@@ -116,15 +131,15 @@ Ataskaita pasiekiama:
 
 ```mermaid
 flowchart LR
-    U[Customer / Admin Browser] -->|HTTPS| V[Vercel]
+    U[Customer / Admin Browser] -->|HTTPS| V[Netlify]
 
     V --> UI[Next.js Web Application]
     V --> API[Next.js REST API]
 
     API --> DB[(Neon PostgreSQL)]
-    API --> B[Vercel Blob]
+    API --> B[Netlify Blobs]
 
-    C[Vercel Cron<br/>daily] -->|GET /api/cron/daily-report| JOB[Background Job]
+    C[Daily scheduler - configure separately] -->|GET /api/cron/daily-report| JOB[Background Job]
     JOB --> DB
 
     DB --> R[Daily Sales Reports]
